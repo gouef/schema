@@ -26,7 +26,7 @@ func (a ArrayField) Validate(value any) error {
 		// Validate elements in the array
 		for i := 0; i < v.Len(); i++ {
 			if err := a.elem.Validate(v.Index(i).Interface()); err != nil {
-				return errors.New("array element " + string(i) + ": " + err.Error())
+				return errors.New("array element " + string(rune(i)) + ": " + err.Error())
 			}
 		}
 	}
