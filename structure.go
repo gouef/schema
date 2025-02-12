@@ -52,6 +52,23 @@ func FromStruct(v any) (Field, error) {
 			f = String()
 		case reflect.Float64:
 			f = Float()
+		case reflect.Slice:
+			elemType := fieldType.Elem()
+			if elemType.Kind() == reflect.String {
+				f = Array(String())
+			} else if elemType.Kind() == reflect.Int {
+				f = Array(Int())
+			} else {
+				return nil, errors.New("unsupported array element type")
+			}
+		case reflect.Map:
+			keyType := fieldType.Key()
+			valueType := fieldType.Elem()
+			if keyType.Kind() == reflect.String && valueType.Kind() == reflect.Int {
+				f = Map(String(), Int())
+			} else {
+				return nil, errors.New("unsupported map key or value type")
+			}
 		default:
 			return nil, errors.New("unsupported field type")
 		}

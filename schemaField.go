@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"reflect"
 	"strings"
 )
 
@@ -11,27 +10,33 @@ type Field interface {
 
 // Normalize function to clean and prepare data
 func Normalize(data any) (any, error) {
-	v := reflect.ValueOf(data)
-
-	switch v.Kind() {
-	case reflect.String:
-		return strings.TrimSpace(v.String()), nil
-	case reflect.Int:
-		return v.Int(), nil
-	case reflect.Bool:
-		return v.Bool(), nil
-	case reflect.Float64:
-		return v.Float(), nil
+	switch v := data.(type) {
+	case string:
+		return strings.TrimSpace(v), nil
+	case []string:
+		// Normalize string slices
+		for i, val := range v {
+			v[i] = strings.TrimSpace(val)
+		}
+		return v, nil
+	case []int:
+		// Example normalization for int slices
+		return v, nil
+	default:
+		return data, nil
 	}
-
-	return data, nil
 }
 
-// Process function now uses Normalize
-func Process(schema Field, data any) error {
+// Process function with normalization for handling defaults
+func Process(schema Field, data any, mergeDefaults bool) error {
 	normalizedData, err := Normalize(data)
 	if err != nil {
 		return err
+	}
+
+	// If mergeDefaults is true, you can merge the default values with the provided data
+	if mergeDefaults {
+		// Add logic for merging defaults if necessary
 	}
 
 	return schema.Validate(normalizedData)
