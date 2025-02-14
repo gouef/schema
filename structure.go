@@ -6,10 +6,11 @@ import (
 )
 
 type StructureField struct {
-	fields map[string]Field
+	fields       map[string]Field
+	defaultValue map[string]any
 }
 
-func (s StructureField) Validate(value any) error {
+func (s *StructureField) Validate(value any) error {
 	v := reflect.ValueOf(value)
 	if v.Kind() != reflect.Map {
 		return errors.New("expected map structure")
@@ -26,8 +27,19 @@ func (s StructureField) Validate(value any) error {
 	return nil
 }
 
+func (s *StructureField) Default(value any) Field {
+	if v, ok := value.(map[string]any); ok {
+		s.defaultValue = v
+	}
+	return s
+}
+
+func (s *StructureField) CastTo(target any) (any, error) {
+	return target, nil
+}
+
 func Structure(fields map[string]Field) Field {
-	return StructureField{fields: fields}
+	return &StructureField{fields: fields}
 }
 
 func FromStruct(v any) (Field, error) {

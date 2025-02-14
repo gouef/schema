@@ -7,10 +7,11 @@ import (
 
 // ArrayField for handling slices
 type ArrayField struct {
-	elem Field
+	elem         Field
+	defaultValue []any
 }
 
-func (a ArrayField) Validate(value any) error {
+func (a *ArrayField) Validate(value any) error {
 	v := reflect.ValueOf(value)
 	if v.Kind() != reflect.Slice && v.Kind() != reflect.Map {
 		return errors.New("expected array or map")
@@ -33,12 +34,23 @@ func (a ArrayField) Validate(value any) error {
 	return nil
 }
 
+func (a *ArrayField) Default(value any) Field {
+	if v, ok := value.([]any); ok {
+		a.defaultValue = v
+	}
+	return a
+}
+
+func (a *ArrayField) CastTo(target any) (any, error) {
+	return target, nil
+}
+
 func ArrayOf(elem Field) Field {
-	return ArrayField{elem: elem}
+	return &ArrayField{elem: elem}
 }
 
 func Array(elem Field) Field {
-	return ArrayField{elem: elem}
+	return &ArrayField{elem: elem}
 }
 
 // Helper function to check if a value matches any of the provided types

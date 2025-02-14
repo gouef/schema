@@ -7,11 +7,12 @@ import (
 
 // MapField for handling maps
 type MapField struct {
-	keyType   Field
-	valueType Field
+	keyType      Field
+	valueType    Field
+	defaultValue map[any]any
 }
 
-func (m MapField) Validate(value any) error {
+func (m *MapField) Validate(value any) error {
 	v := reflect.ValueOf(value)
 	if v.Kind() != reflect.Map {
 		return errors.New("expected map")
@@ -27,6 +28,17 @@ func (m MapField) Validate(value any) error {
 	return nil
 }
 
+func (m *MapField) Default(value any) Field {
+	if v, ok := value.(map[any]any); ok {
+		m.defaultValue = v
+	}
+	return m
+}
+
+func (m *MapField) CastTo(target any) (any, error) {
+	return target, nil
+}
+
 func Map(keyType, valueType Field) Field {
-	return MapField{keyType: keyType, valueType: valueType}
+	return &MapField{keyType: keyType, valueType: valueType}
 }

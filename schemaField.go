@@ -6,6 +6,8 @@ import (
 
 type Field interface {
 	Validate(value any) error
+	Default(value any) Field
+	CastTo(target any) (any, error)
 }
 
 // Normalize function to clean and prepare data
