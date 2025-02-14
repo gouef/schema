@@ -45,6 +45,14 @@ func (a *ArrayField) CastTo(target any) (any, error) {
 	return target, nil
 }
 
+func (a *ArrayField) HasDefault() bool {
+	return len(a.defaultValue) > 0
+}
+
+func (a *ArrayField) GetDefault() any {
+	return a.defaultValue
+}
+
 func ArrayOf(elem Field) Field {
 	return &ArrayField{elem: elem}
 }

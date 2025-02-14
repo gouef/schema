@@ -9,24 +9,48 @@ import (
 func TestSchema(t *testing.T) {
 	t.Run("ArrayOf", func(t *testing.T) {
 		sch := schema.ArrayOf(schema.String())
-		err := schema.Process(sch, []any{"hello", "world"}, false)
+		normalized, err := schema.Process(sch, []any{"hello", "world"}, false)
 		assert.NoError(t, err)
+		assert.Equal(t, []any{"hello", "world"}, normalized)
 
-		err = schema.Process(sch, []any{"hello", 1}, false)
+		normalized, err = schema.Process(sch, []any{"hello", 1}, false)
 		assert.Error(t, err)
+		assert.Equal(t, []any{"hello", 1}, normalized)
 	})
 	t.Run("ListOf", func(t *testing.T) {
 		sch := schema.ListOf(schema.Int())
-		err := schema.Process(sch, []any{1, 2, 3}, false)
+		normalized, err := schema.Process(sch, []any{1, 2, 3}, false)
+		assert.Equal(t, []any{1, 2, 3}, normalized)
 		assert.NoError(t, err)
-		err = schema.Process(sch, []any{1, 2, "3"}, false)
+		normalized, err = schema.Process(sch, []any{1, 2, "3"}, false)
+		assert.Equal(t, []any{1, 2, "3"}, normalized)
 		assert.Error(t, err)
 	})
 	t.Run("AnyOf", func(t *testing.T) {
 		sch := schema.AnyOf(schema.String(), schema.Int())
-		err := schema.Process(sch, "test", false)
+		normalized, err := schema.Process(sch, "test", false)
+		assert.Equal(t, "test", normalized)
 		assert.NoError(t, err)
-		err = schema.Process(sch, []any{1, 2, "3"}, false)
+		normalized, err = schema.Process(sch, []any{1, 2, "3"}, false)
+		assert.Equal(t, []any{1, 2, "3"}, normalized)
 		assert.Error(t, err)
+	})
+
+	t.Run("Structure", func(t *testing.T) {
+		sch, err := schema.Structure(map[string]schema.Field{
+			"handlers":             schema.AnyOf(schema.ArrayOf(schema.String()), schema.Bool()),
+			"processors":           schema.AnyOf(schema.ArrayOf(schema.String()), schema.Bool()),
+			"name":                 schema.String().Default("app"),
+			"hookToTracy":          schema.Bool().Default(true),
+			"tracyBaseUrl":         schema.String(),
+			"usePriorityProcessor": schema.Bool().Default(true),
+			"accessPriority":       schema.String().Default("INFO"),
+			"logDir":               schema.String(),
+		}).CastTo(map[string]any{
+			"handlers":   make([]string, 0),
+			"processors": make([]string, 0),
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, []any{1, 2, "3"}, sch)
 	})
 }

@@ -42,6 +42,14 @@ func Structure(fields map[string]Field) Field {
 	return &StructureField{fields: fields}
 }
 
+func (s *StructureField) HasDefault() bool {
+	return len(s.defaultValue) > 0
+}
+
+func (s *StructureField) GetDefault() any {
+	return s.defaultValue
+}
+
 func FromStruct(v any) (Field, error) {
 	t := reflect.TypeOf(v)
 	if t.Kind() != reflect.Struct {

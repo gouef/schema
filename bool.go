@@ -20,6 +20,14 @@ func (b *BoolField) Default(value any) Field {
 	return b
 }
 
+func (b *BoolField) HasDefault() bool {
+	return b.defaultValue != false
+}
+
+func (b *BoolField) GetDefault() any {
+	return b.defaultValue
+}
+
 func (b *BoolField) CastTo(target any) (any, error) {
 	return target, nil
 }

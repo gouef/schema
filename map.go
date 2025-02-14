@@ -35,6 +35,14 @@ func (m *MapField) Default(value any) Field {
 	return m
 }
 
+func (m *MapField) HasDefault() bool {
+	return len(m.defaultValue) > 0
+}
+
+func (m *MapField) GetDefault() any {
+	return m.defaultValue
+}
+
 func (m *MapField) CastTo(target any) (any, error) {
 	return target, nil
 }

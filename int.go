@@ -20,6 +20,14 @@ func (i *IntField) Default(value any) Field {
 	return i
 }
 
+func (i *IntField) HasDefault() bool {
+	return i.defaultValue != 0
+}
+
+func (i *IntField) GetDefault() any {
+	return i.defaultValue
+}
+
 func (i *IntField) CastTo(target any) (any, error) {
 	return target, nil
 }

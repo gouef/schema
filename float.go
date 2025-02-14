@@ -20,6 +20,14 @@ func (f *FloatField) Default(value any) Field {
 	return f
 }
 
+func (f *FloatField) HasDefault() bool {
+	return f.defaultValue != 0.0
+}
+
+func (f *FloatField) GetDefault() any {
+	return f.defaultValue
+}
+
 func (f *FloatField) CastTo(target any) (any, error) {
 	return target, nil
 }

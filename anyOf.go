@@ -26,6 +26,14 @@ func (a *AnyOfField) Default(value any) Field {
 	return a
 }
 
+func (a *AnyOfField) HasDefault() bool {
+	return a.defaultValue != nil
+}
+
+func (a *AnyOfField) GetDefault() any {
+	return a.defaultValue
+}
+
 func (a *AnyOfField) CastTo(target any) (any, error) {
 	return target, nil
 }

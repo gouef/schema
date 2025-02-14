@@ -31,6 +31,14 @@ func (l *ListField) Default(value any) Field {
 	return l
 }
 
+func (l *ListField) HasDefault() bool {
+	return len(l.defaultValue) > 0
+}
+
+func (l *ListField) GetDefault() any {
+	return l.defaultValue
+}
+
 func (l *ListField) CastTo(target any) (any, error) {
 	return target, nil
 }
