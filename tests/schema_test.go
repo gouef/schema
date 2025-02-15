@@ -37,7 +37,7 @@ func TestSchema(t *testing.T) {
 	})
 
 	t.Run("Structure", func(t *testing.T) {
-		sch, err := schema.Structure(map[string]schema.Field{
+		sch := schema.Structure(map[string]schema.Field{
 			"handlers":             schema.AnyOf(schema.ArrayOf(schema.String()), schema.Bool()),
 			"processors":           schema.AnyOf(schema.ArrayOf(schema.String()), schema.Bool()),
 			"name":                 schema.String().Default("app"),
@@ -46,11 +46,10 @@ func TestSchema(t *testing.T) {
 			"usePriorityProcessor": schema.Bool().Default(true),
 			"accessPriority":       schema.String().Default("INFO"),
 			"logDir":               schema.String(),
-		}).CastTo(map[string]any{
-			"handlers":   make([]string, 0),
-			"processors": make([]string, 0),
 		})
+		data := map[string]any{}
+		proc, err := schema.Process(sch, data, true)
 		assert.NoError(t, err)
-		assert.Equal(t, []any{1, 2, "3"}, sch)
+		assert.Equal(t, []any{1, 2, "3"}, proc)
 	})
 }
