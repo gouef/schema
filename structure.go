@@ -8,6 +8,7 @@ import (
 type StructureField struct {
 	fields       map[string]Field
 	defaultValue map[string]any
+	required     bool
 }
 
 func (s *StructureField) Validate(value any) error {
@@ -27,6 +28,15 @@ func (s *StructureField) Validate(value any) error {
 	return nil
 }
 
+func (s *StructureField) Required() Field {
+	s.required = true
+	return s
+}
+
+func (s *StructureField) IsRequired() bool {
+	return s.required
+}
+
 func (s *StructureField) Default(value any) Field {
 	if v, ok := value.(map[string]any); ok {
 		s.defaultValue = v
@@ -39,7 +49,7 @@ func (s *StructureField) CastTo(target any) (any, error) {
 }
 
 func Structure(fields map[string]Field) Field {
-	return &StructureField{fields: fields}
+	return &StructureField{fields: fields, required: false}
 }
 
 func (s *StructureField) HasDefault() bool {

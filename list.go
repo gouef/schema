@@ -9,6 +9,7 @@ import (
 type ListField struct {
 	elem         Field
 	defaultValue []any
+	required     bool
 }
 
 func (l *ListField) Validate(value any) error {
@@ -22,6 +23,15 @@ func (l *ListField) Validate(value any) error {
 		}
 	}
 	return nil
+}
+
+func (l *ListField) Required() Field {
+	l.required = true
+	return l
+}
+
+func (l *ListField) IsRequired() bool {
+	return l.required
 }
 
 func (l *ListField) Default(value any) Field {
@@ -44,5 +54,5 @@ func (l *ListField) CastTo(target any) (any, error) {
 }
 
 func ListOf(elem Field) Field {
-	return &ListField{elem: elem}
+	return &ListField{elem: elem, required: false}
 }

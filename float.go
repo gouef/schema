@@ -4,6 +4,7 @@ import "errors"
 
 type FloatField struct {
 	defaultValue float64
+	required     bool
 }
 
 func (f *FloatField) Validate(value any) error {
@@ -11,6 +12,15 @@ func (f *FloatField) Validate(value any) error {
 		return errors.New("expected float64")
 	}
 	return nil
+}
+
+func (f *FloatField) Required() Field {
+	f.required = true
+	return f
+}
+
+func (f *FloatField) IsRequired() bool {
+	return f.required
 }
 
 func (f *FloatField) Default(value any) Field {
@@ -33,5 +43,5 @@ func (f *FloatField) CastTo(target any) (any, error) {
 }
 
 func Float() Field {
-	return &FloatField{}
+	return &FloatField{required: false}
 }

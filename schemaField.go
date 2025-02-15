@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -10,6 +12,8 @@ type Field interface {
 	CastTo(target any) (any, error)
 	HasDefault() bool
 	GetDefault() any
+	Required() Field
+	IsRequired() bool
 }
 
 // Normalize function to clean and prepare data
@@ -50,10 +54,12 @@ func Process(schema Field, data any, mergeDefaults bool) (any, error) {
 	// If mergeDefaults is true, you can merge the default values with the provided data
 	if mergeDefaults {
 		// Add logic for merging defaults if necessary
-		if structure, ok := schema.(*StructureField); ok && structure.HasDefault() {
+		if structure, ok := schema.(*StructureField); ok {
 			for key, field := range structure.fields {
 				if _, exists := normalizedData.(map[string]any)[key]; !exists && field.HasDefault() {
 					normalizedData.(map[string]any)[key] = field.GetDefault()
+				} else if !exists && field.IsRequired() {
+					return nil, errors.New(fmt.Sprintf("%s is required.", key))
 				}
 			}
 		}

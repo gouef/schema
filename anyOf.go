@@ -6,6 +6,7 @@ import "errors"
 type AnyOfField struct {
 	options      []Field
 	defaultValue any
+	required     bool
 }
 
 func (a *AnyOfField) Validate(value any) error {
@@ -15,6 +16,15 @@ func (a *AnyOfField) Validate(value any) error {
 		}
 	}
 	return errors.New("value does not match any of the allowed types")
+}
+
+func (a *AnyOfField) Required() Field {
+	a.required = true
+	return a
+}
+
+func (a *AnyOfField) IsRequired() bool {
+	return a.required
 }
 
 func (a *AnyOfField) Default(value any) Field {
@@ -39,5 +49,5 @@ func (a *AnyOfField) CastTo(target any) (any, error) {
 }
 
 func AnyOf(types ...Field) Field {
-	return &AnyOfField{options: types}
+	return &AnyOfField{options: types, required: false}
 }

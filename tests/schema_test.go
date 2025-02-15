@@ -49,7 +49,34 @@ func TestSchema(t *testing.T) {
 		})
 		data := map[string]any{}
 		proc, err := schema.Process(sch, data, true)
+
+		expected := map[string]interface{}(map[string]interface{}{
+			"accessPriority":       "INFO",
+			"hookToTracy":          true,
+			"name":                 "app",
+			"usePriorityProcessor": true,
+		})
 		assert.NoError(t, err)
-		assert.Equal(t, []any{1, 2, "3"}, proc)
+		assert.Equal(t, expected, proc)
+	})
+
+	t.Run("Structure, Required", func(t *testing.T) {
+		sch := schema.Structure(map[string]schema.Field{
+			"handlers":             schema.AnyOf(schema.ArrayOf(schema.String().Required()).Required(), schema.Bool().Required()),
+			"processors":           schema.AnyOf(schema.ArrayOf(schema.String()), schema.Bool()).Required(),
+			"name":                 schema.String().Default("app"),
+			"hookToTracy":          schema.Bool().Default(true),
+			"tracyBaseUrl":         schema.String().Required(),
+			"usePriorityProcessor": schema.Bool().Default(true),
+			"accessPriority":       schema.String().Default("INFO"),
+			"logDir":               schema.String().Required(),
+			"number":               schema.Int().Required(),
+			"map":                  schema.Map(schema.String(), schema.Bool()).Required(),
+		}).Required()
+		data := map[string]any{}
+		proc, err := schema.Process(sch, data, true)
+		assert.Error(t, err)
+
+		assert.Nil(t, proc)
 	})
 }

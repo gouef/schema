@@ -4,6 +4,7 @@ import "errors"
 
 type BoolField struct {
 	defaultValue bool
+	required     bool
 }
 
 func (b *BoolField) Validate(value any) error {
@@ -11,6 +12,15 @@ func (b *BoolField) Validate(value any) error {
 		return errors.New("expected boolean")
 	}
 	return nil
+}
+
+func (b *BoolField) Required() Field {
+	b.required = true
+	return b
+}
+
+func (b *BoolField) IsRequired() bool {
+	return b.required
 }
 
 func (b *BoolField) Default(value any) Field {
@@ -33,5 +43,5 @@ func (b *BoolField) CastTo(target any) (any, error) {
 }
 
 func Bool() Field {
-	return &BoolField{}
+	return &BoolField{required: false}
 }

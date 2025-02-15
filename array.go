@@ -9,6 +9,7 @@ import (
 type ArrayField struct {
 	elem         Field
 	defaultValue []any
+	required     bool
 }
 
 func (a *ArrayField) Validate(value any) error {
@@ -34,6 +35,15 @@ func (a *ArrayField) Validate(value any) error {
 	return nil
 }
 
+func (a *ArrayField) Required() Field {
+	a.required = true
+	return a
+}
+
+func (a *ArrayField) IsRequired() bool {
+	return a.required
+}
+
 func (a *ArrayField) Default(value any) Field {
 	if v, ok := value.([]any); ok {
 		a.defaultValue = v
@@ -54,19 +64,9 @@ func (a *ArrayField) GetDefault() any {
 }
 
 func ArrayOf(elem Field) Field {
-	return &ArrayField{elem: elem}
+	return &ArrayField{elem: elem, required: false}
 }
 
 func Array(elem Field) Field {
-	return &ArrayField{elem: elem}
-}
-
-// Helper function to check if a value matches any of the provided types
-func validateAnyOf(value any, variants ...any) error {
-	for _, v := range variants {
-		if reflect.DeepEqual(value, v) {
-			return nil
-		}
-	}
-	return errors.New("value does not match any of the allowed types")
+	return &ArrayField{elem: elem, required: false}
 }

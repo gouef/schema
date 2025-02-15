@@ -4,6 +4,7 @@ import "errors"
 
 type StringField struct {
 	defaultValue string
+	required     bool
 }
 
 func (s *StringField) Validate(value any) error {
@@ -11,6 +12,15 @@ func (s *StringField) Validate(value any) error {
 		return errors.New("expected string")
 	}
 	return nil
+}
+
+func (s *StringField) Required() Field {
+	s.required = true
+	return s
+}
+
+func (s *StringField) IsRequired() bool {
+	return s.required
 }
 
 func (s *StringField) Default(value any) Field {
@@ -33,5 +43,5 @@ func (s *StringField) CastTo(target any) (any, error) {
 }
 
 func String() Field {
-	return &StringField{}
+	return &StringField{required: false}
 }

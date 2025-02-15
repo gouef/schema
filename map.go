@@ -10,6 +10,7 @@ type MapField struct {
 	keyType      Field
 	valueType    Field
 	defaultValue map[any]any
+	required     bool
 }
 
 func (m *MapField) Validate(value any) error {
@@ -26,6 +27,15 @@ func (m *MapField) Validate(value any) error {
 		}
 	}
 	return nil
+}
+
+func (m *MapField) Required() Field {
+	m.required = true
+	return m
+}
+
+func (m *MapField) IsRequired() bool {
+	return m.required
 }
 
 func (m *MapField) Default(value any) Field {
@@ -48,5 +58,5 @@ func (m *MapField) CastTo(target any) (any, error) {
 }
 
 func Map(keyType, valueType Field) Field {
-	return &MapField{keyType: keyType, valueType: valueType}
+	return &MapField{keyType: keyType, valueType: valueType, required: false}
 }
